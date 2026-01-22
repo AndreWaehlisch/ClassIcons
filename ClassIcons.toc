@@ -1,4 +1,4 @@
-## Interface: 120000
+## Interface: 20505
 
 ## Title: ClassIcons |cffB72B09TheWarWithin release|r
 
