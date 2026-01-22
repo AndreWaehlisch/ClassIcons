@@ -1,6 +1,6 @@
 ## Interface: 20505
 
-## Title: ClassIcons |cffB72B09TheWarWithin release|r
+## Title: ClassIcons
 
 ## Version: @project-version@
 
