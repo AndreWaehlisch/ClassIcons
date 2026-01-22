@@ -1,6 +1,6 @@
 ## Interface: 120000
 
-## Title: ClassIcons |cffB72B09TheWarWithin release|r
+## Title: ClassIcons |cff3737FFMidnight release|r
 
 ## Version: @project-version@
 
