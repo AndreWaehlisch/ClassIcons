@@ -295,7 +295,7 @@ function ClassIcons_UpdateIconPositions()
 
 	for memberFrame in pool:EnumerateActive() do
 		local i = memberFrame.layoutIndex
-		_G["PartyFrameClassIcon"..i]:SetParent(memberFrame)
+		_G["PartyFrameClassIcon"..i]:SetParent(memberFrame.PartyMemberOverlay)
 		_G["PartyFrameClassIcon"..i]:ClearAllPoints()
 		_G["PartyFrameClassIcon"..i]:SetPoint("CENTER", memberFrame.portrait, "CENTER", x, y)
 	end
