@@ -1,38 +1,38 @@
 local AddonName, ClassIcons = ...
 
-local LibCreatureType = LibStub("LibBabble-CreatureType-3.0"):GetReverseLookupTable()
-
 local Icons = {
-	-- list of all icons available:
-	["ABERRATION"] = "ABERRATION",
-	["BEAST"] = "BEAST",
-	["CRITTER"] = "CRITTER",
+	-- list of all icons available, the first IDs are according to C_CreatureInfo.GetCreatureTypeIDs
+	[1] = "BEAST",
+	[2] = "DRAGONKIN",
+	[3] = "DEMON",
+	[4] = "ELEMENTAL",
+	[5] = "GIANT",
+	[6] = "UNDEAD",
+	[7] = "HUMANOID",
+	[8] = "CRITTER",
+	[9] = "MECHANICAL",
+	[10] = "UNKNOWN",
+	[11] = "TOTEM",
+	[12] = "CRITTER",
+	[13] = "UNKNOWN",
+	[14] = "SAVAGEPET",
+	[15] = "ABERRATION",
+
 	["DEATHKNIGHT"] = "DEATHKNIGHT",
-	["DEMON"] = "DEMON",
-	["DRAGONKIN"] = "DRAGONKIN",
 	["DEMONHUNTER"] = "DEMONHUNTER",
 	["DRUID"] = "DRUID",
-	["ELEMENTAL"] = "ELEMENTAL",
 	["EVOKER"] = "EVOKER",
-	["GIANT"] = "GIANT",
-	["HUMANOID"] = "HUMANOID",
 	["HUNTER"] = "HUNTER",
 	["MAGE"] = "MAGE",
-	["MECHANICAL"] = "MECHANICAL",
 	["MONK"] = "MONK",
 	["PALADIN"] = "PALADIN",
 	["PRIEST"] = "PRIEST",
 	["ROGUE"] = "ROGUE",
-	["SAVAGEPET"] = "SAVAGEPET",
 	["SHAMAN"] = "SHAMAN",
-	["TOTEM"] = "TOTEM",
-	["UNDEAD"] = "UNDEAD",
-	["UNKNOWN"] = "UNKNOWN",
 	["WARLOCK"] = "WARLOCK",
 	["WARRIOR"] = "WARRIOR",
 
-	["NON-COMBAT PET"] = "CRITTER",
-	["WILD PET"] = "SAVAGEPET",
+	["SAVAGEPET"] = "SAVAGEPET",
 }
 
 function ClassIcons_OnLoad(self)
@@ -241,15 +241,13 @@ function ClassIcons_UpdateIcon(frame, unit, setting)
 	local _, texturefile = UnitClass(unit)
 
 	if ( UnitIsMob ) and ( CLASSICONS_CONFIG.MobsUse == "type" ) then
-		local ct_loc = UnitCreatureType(unit)
+		local _, ct_id = UnitCreatureType(unit)
 
-		if issecretvalue(ct_loc) and (canaccessvalue(ct_loc) == false) then
-			ct_loc = nil
+		if (issecretvalue(ct_id) and (canaccessvalue(ct_id) == false)) or (ct_id == nil) or (ct_id > #Icons) then
+			texturefile = "UNKNOWN"
+		else
+			texturefile = Icons[ct_id]
 		end
-
-		local ct = strupper( LibCreatureType[ct_loc] or ct_loc or "" )
-
-		texturefile = Icons[ct]
 	elseif ( not UnitIsMob ) and ( not Icons[texturefile] ) then
 		-- class is not (yet) supported by this addon
 		texturefile = "Not specified"

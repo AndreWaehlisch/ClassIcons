@@ -10,13 +10,8 @@
 
 ## SavedVariables: CLASSICONS_CONFIG
 
-## OptionalDeps: LibBabble-CreatureType-3.0
-
 ## IconTexture: 132092
 
 ## Category: Unit Frames
-
-Libs\LibBabble-CreatureType-3.0\LibStub\LibStub.lua
-Libs\LibBabble-CreatureType-3.0\lib.xml
 
 ClassIcons.xml
