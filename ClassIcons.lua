@@ -242,6 +242,11 @@ function ClassIcons_UpdateIcon(frame, unit, setting)
 
 	if ( UnitIsMob ) and ( CLASSICONS_CONFIG.MobsUse == "type" ) then
 		local ct_loc = UnitCreatureType(unit)
+
+		if issecretvalue(ct_loc) and (canaccessvalue(ct_loc) == false) then
+			ct_loc = nil
+		end
+
 		local ct = strupper( LibCreatureType[ct_loc] or ct_loc or "" )
 
 		texturefile = Icons[ct]
