@@ -1,4 +1,4 @@
-## Interface: 120000
+## Interface: 120001
 
 ## Title: ClassIcons |cff3737FFMidnight release|r
 
