@@ -1,37 +1,38 @@
 local AddonName, ClassIcons = ...
 
-local LibCreatureType = LibStub("LibBabble-CreatureType-3.0"):GetReverseLookupTable()
-
 local Icons = {
-	-- list of all icons available:
-	["ABERRATION"] = "ABERRATION",
-	["BEAST"] = "BEAST",
-	["CRITTER"] = "CRITTER",
+	-- list of all icons available, the first IDs are according to C_CreatureInfo.GetCreatureTypeIDs
+	[1] = "BEAST",
+	[2] = "DRAGONKIN",
+	[3] = "DEMON",
+	[4] = "ELEMENTAL",
+	[5] = "GIANT",
+	[6] = "UNDEAD",
+	[7] = "HUMANOID",
+	[8] = "CRITTER",
+	[9] = "MECHANICAL",
+	[10] = "UNKNOWN",
+	[11] = "TOTEM",
+	[12] = "CRITTER",
+	[13] = "UNKNOWN",
+	[14] = "SAVAGEPET",
+	[15] = "ABERRATION",
+
 	["DEATHKNIGHT"] = "DEATHKNIGHT",
-	["DEMON"] = "DEMON",
-	["DRAGONKIN"] = "DRAGONKIN",
 	["DEMONHUNTER"] = "DEMONHUNTER",
 	["DRUID"] = "DRUID",
-	["ELEMENTAL"] = "ELEMENTAL",
-	["GIANT"] = "GIANT",
-	["HUMANOID"] = "HUMANOID",
+	["EVOKER"] = "EVOKER",
 	["HUNTER"] = "HUNTER",
 	["MAGE"] = "MAGE",
-	["MECHANICAL"] = "MECHANICAL",
 	["MONK"] = "MONK",
 	["PALADIN"] = "PALADIN",
 	["PRIEST"] = "PRIEST",
 	["ROGUE"] = "ROGUE",
-	["SAVAGEPET"] = "SAVAGEPET",
 	["SHAMAN"] = "SHAMAN",
-	["TOTEM"] = "TOTEM",
-	["UNDEAD"] = "UNDEAD",
-	["UNKNOWN"] = "UNKNOWN",
 	["WARLOCK"] = "WARLOCK",
 	["WARRIOR"] = "WARRIOR",
 
-	["NON-COMBAT PET"] = "CRITTER",
-	["WILD PET"] = "SAVAGEPET",
+	["SAVAGEPET"] = "SAVAGEPET",
 }
 
 function ClassIcons_OnLoad(self)
@@ -194,6 +195,7 @@ function ClassIcons_CmdHandler(msg)
 	end
 
 	if ( cmd == "mobsuse" ) then
+
 		if ( arg1 == "class" ) or ( arg1 == "type" ) or ( arg1 == "none" ) then
 			CLASSICONS_CONFIG.MobsUse = arg1
 		else
@@ -222,8 +224,8 @@ function ClassIcons_UpdateIcon(frame, unit, setting)
 	end
 
 	local _G = getfenv()
-	local icon = _G[frame.."ClassIcon"]
-	local texture = _G[frame.."ClassIconTexture"]
+	local icon = _G[frame]
+	local texture = _G[frame.."Texture"]
 
 	if ( not icon ) or ( not texture ) then
 		return
@@ -239,10 +241,13 @@ function ClassIcons_UpdateIcon(frame, unit, setting)
 	local _, texturefile = UnitClass(unit)
 
 	if ( UnitIsMob ) and ( CLASSICONS_CONFIG.MobsUse == "type" ) then
-		local ct_loc = UnitCreatureType(unit)
-		local ct = strupper( LibCreatureType[ct_loc] or ct_loc or "" )
+		local _, ct_id = UnitCreatureType(unit)
 
-		texturefile = Icons[ct]
+		if (issecretvalue(ct_id) and (canaccessvalue(ct_id) == false)) or (ct_id == nil) or (ct_id > #Icons) then
+			texturefile = "UNKNOWN"
+		else
+			texturefile = Icons[ct_id]
+		end
 	elseif ( not UnitIsMob ) and ( not Icons[texturefile] ) then
 		-- class is not (yet) supported by this addon
 		texturefile = "Not specified"
@@ -285,13 +290,17 @@ function ClassIcons_UpdateIconPositions()
 	FocusFrameClassIcon:SetPoint("CENTER", FocusFrame.portrait, "CENTER", x, y)
 
 	--PARTY
-	r = floor(PartyMemberFrame1.portrait:GetWidth()/2)
+	local pool = PartyFrame.PartyMemberFramePool
+	local somePartyMemberFrame = pool:GetNextActive()
+	r = floor(somePartyMemberFrame.portrait:GetWidth()/2)
 	x = ceil(r*cos(CLASSICONS_CONFIG.PartyAngle))
 	y = ceil(r*sin(CLASSICONS_CONFIG.PartyAngle))
 
-	for i = 1, 4 do
-		_G["PartyMemberFrame"..i.."ClassIcon"]:ClearAllPoints()
-		_G["PartyMemberFrame"..i.."ClassIcon"]:SetPoint("CENTER", _G["PartyMemberFrame"..i].portrait, "CENTER", x, y)
+	for memberFrame in pool:EnumerateActive() do
+		local i = memberFrame.layoutIndex
+		_G["PartyFrameClassIcon"..i]:SetParent(memberFrame.PartyMemberOverlay)
+		_G["PartyFrameClassIcon"..i]:ClearAllPoints()
+		_G["PartyFrameClassIcon"..i]:SetPoint("CENTER", memberFrame.portrait, "CENTER", x, y)
 	end
 end
 
@@ -328,6 +337,7 @@ function ClassIcons_OnEvent(self, event, arg1)
 		ClassIcons_UpdateIconPositions()
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
 		ClassIcons_UpdatePlayerFrame()
+		ClassIcons_UpdatePartyFrames()
 	elseif ( event == "PLAYER_TARGET_CHANGED" ) then
 		ClassIcons_UpdateTargetFrame()
 	elseif ( event == "PLAYER_FOCUS_CHANGED" ) then
@@ -338,20 +348,19 @@ function ClassIcons_OnEvent(self, event, arg1)
 end
 
 function ClassIcons_UpdatePlayerFrame()
-	ClassIcons_UpdateIcon("PlayerFrame", "player", CLASSICONS_CONFIG.Player)
+	ClassIcons_UpdateIcon("PlayerFrameClassIcon", "player", CLASSICONS_CONFIG.Player)
 end
 
 function ClassIcons_UpdateTargetFrame()
-	ClassIcons_UpdateIcon("TargetFrame", "target", CLASSICONS_CONFIG.Target)
+	ClassIcons_UpdateIcon("TargetFrameClassIcon", "target", CLASSICONS_CONFIG.Target)
 end
 
 function ClassIcons_UpdateFocusFrame()
-	ClassIcons_UpdateIcon("FocusFrame", "focus", CLASSICONS_CONFIG.Focus)
+	ClassIcons_UpdateIcon("FocusFrameClassIcon", "focus", CLASSICONS_CONFIG.Focus)
 end
 
 function ClassIcons_UpdatePartyFrames()
-	ClassIcons_UpdateIcon("PartyMemberFrame1", "party1", CLASSICONS_CONFIG.Party)
-	ClassIcons_UpdateIcon("PartyMemberFrame2", "party2", CLASSICONS_CONFIG.Party)
-	ClassIcons_UpdateIcon("PartyMemberFrame3", "party3", CLASSICONS_CONFIG.Party)
-	ClassIcons_UpdateIcon("PartyMemberFrame4", "party4", CLASSICONS_CONFIG.Party)
+	for i = 1, 4 do
+		ClassIcons_UpdateIcon("PartyFrameClassIcon"..i, "party"..i, CLASSICONS_CONFIG.Party)
+	end
 end
