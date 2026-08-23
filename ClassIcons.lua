@@ -1,7 +1,5 @@
 local AddonName, ClassIcons = ...
 
-local LibCreatureType = LibStub("LibBabble-CreatureType-3.0"):GetReverseLookupTable()
-
 local Icons = {
 	-- list of all icons available, the first IDs are according to C_CreatureInfo.GetCreatureTypeIDs
 	[1] = "BEAST",
@@ -278,14 +276,14 @@ local function CheckVar(key, standard)
 end
 
 local DBSetup = {
-	["Active"] = true
-	["Player"] = true
-	["Party"] = true
-	["Target"] = true
-	["MobsUse"] = "type"
-	["PlayerAngle"] = 45
-	["PartyAngle"] = 45
-	["TargetAngle"] = 135
+	["Active"] = true,
+	["Player"] = true,
+	["Party"] = true,
+	["Target"] = true,
+	["MobsUse"] = "type",
+	["PlayerAngle"] = 45,
+	["PartyAngle"] = 45,
+	["TargetAngle"] = 135,
 }
 
 function ClassIcons_OnEvent(self, event, arg1)
